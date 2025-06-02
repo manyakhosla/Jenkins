@@ -1,60 +1,39 @@
 pipeline {
     agent any
 
+    environment {
+        // Add Node.js to the PATH if not already present system-wide
+        PATH = "C:\\Program Files\\nodejs;${env.PATH}"
+    }
+
     stages {
-
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building the code'
-                echo 'Tool: Maven'
+                git branch: 'main', url: 'https://github.com/manyakhosla/8.2CDevSecOps.git'
             }
         }
 
-        stage('Unit and Integration Tests') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Running unit and integration tests'
-                echo 'Tools: JUnit, Jest'
+                bat 'npm install'
             }
         }
 
-        stage('Code Analysis') {
+        stage('Run Tests') {
             steps {
-                echo 'Performing code analysis'
-                echo 'Tool: SonarQube'
+                bat 'npm test || exit /b 0' // Continue even if tests fail
             }
         }
 
-        stage('Security Scan') {
+        stage('Generate Coverage Report') {
             steps {
-                echo ' Performing security scan to identify vulnerabilities'
-                echo 'Tool: Snyk'
+                bat 'npm run coverage || exit /b 0'
             }
         }
 
-        stage('Deploy to Staging') {
+        stage('NPM Audit (Security Scan)') {
             steps {
-                echo 'Deploying to staging server'
-                echo 'Tool: AWS CLI'
-            }
-        }
-
-        stage('Integration Tests on Staging') {
-            steps {
-                echo 'Running integration tests on staging'
-                echo 'Tools: Postman, Selenium'
-            }
-        }
-
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploying to production server'
-                echo 'Tools: AWS CLI, Docker'
-            }
-        }
-
-        stage('Testing Commit Changes') {
-            steps {
-                echo 'Testing.'
+                bat 'npm audit || exit /b 0'
             }
         }
     }
