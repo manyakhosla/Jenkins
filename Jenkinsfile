@@ -54,7 +54,7 @@ pipeline {
 
         stage('Testing Commit Changes') {
             steps {
-                echo 'Testing'
+                echo 'Testing.'
             }
         }
     }
